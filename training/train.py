@@ -61,6 +61,7 @@ def train(model: torch.nn.Module,
           train_dataloader: torch.utils.data.DataLoader, 
           test_dataloader: torch.utils.data.DataLoader, 
           optimizer: torch.optim.Optimizer,
+          scheduler: torch.optim.lr_scheduler._LRScheduler,
           loss_fn: torch.nn.Module,
           device: torch.device,
           checkpoint_dir: str = "models") -> Dict[str, List]:
@@ -90,6 +91,8 @@ def train(model: torch.nn.Module,
         test_loss, test_acc = train_test_1(model, test_dataloader, loss_fn, optimizer, device, train=False)
 
         print(f"Epoch: {epoch+1} | train_loss: {train_loss:.4f} | train_acc: {train_acc:.4f} | test_loss: {test_loss:.4f} | test_acc: {test_acc:.4f}")
+        
+        scheduler.step()
 
         results["train_loss"].append(train_loss)
         results["train_acc"].append(train_acc)
@@ -97,10 +100,9 @@ def train(model: torch.nn.Module,
         results["test_acc"].append(test_acc)
 
         save_checkpoint(model=model,
-                        optimizer=optimizer,
-                        epoch=epoch+1,
-                        target_dir=checkpoint_dir,
-                        checkpoint_name=f"checkpoint_epoch_{epoch+1}.pth")
+                optimizer=optimizer,
+                epoch=epoch+1,
+                checkpoint_dir=checkpoint_dir)
 
     return results
 

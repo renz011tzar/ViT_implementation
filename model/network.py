@@ -91,7 +91,6 @@ class ViT(nn.Module):
     x = self.positional_embedding + x
     x = self.embedding_dropout(x)
     x = self.norm(x)  # normalize the features
-    x = x.permute(1,0,2)
     x = self.transformer_encoder(x)
     x = self.mlp_head(x[:, 0])
     return x
